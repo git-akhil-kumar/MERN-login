@@ -203,16 +203,18 @@ module.exports = (app) => {
         });
 
     app.get('/api/v1/account/logout', (req, res, next) =>{
-        const { a } = req;
-        const { token } = a;
+        const { query } = req;
+        const { token } = query;
 
-        console.log(' token ?= ', token);
+        console.log(' token === ', token);
 
         UserSession.findOneAndUpdate({ 
             _id: token,                                       // finding perimeters 
             isDeleted: false
         },{
-            $set: {isDeleted: true}
+            $set: {
+                isDeleted: true
+            }
                                                                  // updating parameters
         },null,(err, sessions) => {
             if(err) {
@@ -232,9 +234,9 @@ module.exports = (app) => {
                 return res.send({
                     success: true,
                     message: 'Successfully logout !!'
-                })
+                });
             }
-        })
+        });
 
     });
 };
