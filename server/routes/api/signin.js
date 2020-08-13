@@ -203,8 +203,8 @@ module.exports = (app) => {
         });
 
     app.get('/api/v1/account/logout', (req, res, next) =>{
-        const { body } = req;
-        const { token } = body;
+        const { a } = req;
+        const { token } = a;
 
         console.log(' token ?= ', token);
 
