@@ -3,7 +3,7 @@ const UserSession = require('../../models/UserSession');
 
 module.exports = (app) => {
       
-      app.post('/api/account/signup', (req, res, next) => {
+    app.post('/api/account/signup', (req, res, next) => {
         
 
         const { body } = req ;
@@ -166,7 +166,40 @@ module.exports = (app) => {
                         token: doc._id
                     });
                 });
-        });
+        });});
 
+    app.get('/api/account/verify', (req, res, next) => {
+        // get the token id
+        const { query } = req;
+
+        const { token } = query;
+
+        // vwrify the session token and make sure its not deleted
+
+        // find the token id and 
+        UserSession.find({ 
+            _id: token    ,                                       // finding perimeters 
+            isDeleted: false
+        },(err, sessions) => {
+            if(err) {
+                return res.send({
+                    success: false,
+                    message: 'Error: Server Error'
+                });
+            };
+            
+            if(sessions.length != 1 ){
+                return res.send({
+                    success: false,
+                    message: 'Error: sessions object empty'
+                });
+            }else{
+                return res.send({
+                    success: true,
+                    message: 'Success Login Token Id'
+                })
+            }
+        })
     });
+
 };
