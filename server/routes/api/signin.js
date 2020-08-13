@@ -206,17 +206,14 @@ module.exports = (app) => {
         const { query } = req;
         const { token } = query;
 
-        console.log(' token === ', token);
-
         UserSession.findOneAndUpdate({ 
             _id: token,                                       // finding perimeters 
             isDeleted: false
         },{
             $set: {
                 isDeleted: true
-            }
-                                                                 // updating parameters
-        },null,(err, sessions) => {
+            }                                                     // updating parameters
+        },  null ,(err ,sessions) => {
             if(err) {
                 return res.send({
                     success: false,
@@ -225,7 +222,7 @@ module.exports = (app) => {
             };
             
             console.log( ' Sessions : ', sessions);
-            if(sessions.length == 0  ){
+            if(sessions.length === 0  ){
                 return res.send({
                     success: false,
                     message: 'Error: sessions object empty'
@@ -235,7 +232,7 @@ module.exports = (app) => {
                     success: true,
                     message: 'Successfully logout !!'
                 });
-            }
+            };
         });
 
     });
