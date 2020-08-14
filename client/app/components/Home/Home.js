@@ -14,7 +14,10 @@ class Home extends Component {
             isLoading: true,
             token: '',
             signUpError: '',
-            signInError: ''
+            signInError: '',
+            signInEmail: '',
+            signInPassword: '',
+
         };
     }
 
@@ -44,7 +47,6 @@ class Home extends Component {
         }
         else
         {
-
             this.setState({
                 isLoading: false,
             })
@@ -54,7 +56,10 @@ class Home extends Component {
     render() {
         const {
             isLoading,
-            token
+            token,
+            signInError,
+            signInEmail,
+            signInPassword
         } = this.state;
 
         if(isLoading)
@@ -70,17 +75,32 @@ class Home extends Component {
         {
             return (
                 <div>
-                    <p>Sign up ... </p>
+                    <p>Please sign in ... </p>
+                    <input 
+                        type="email" 
+                        placeholder="Email" 
+                        value={signInEmail}
+                        
+                    />
+                    <input 
+                        type="password" 
+                        placeholder="Password"
+                        value={signInPassword}
+                        
+                    />
+                    <button>Sign In</button>  
                 </div>
+
+                
             );
         }
 
         return (
-           <>
-                <div>
-                    <p> hello </p>
-                </div>
-           </>
+         
+            <div>
+                <p> hello </p>
+            </div>
+           
         );
     }
 }
