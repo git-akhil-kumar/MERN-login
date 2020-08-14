@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+// import Button from 'react-bootstrap';
 import 'whatwg-fetch';
 
 import {
@@ -17,17 +18,24 @@ class Home extends Component {
             signInError: '',
             signInEmail: '',
             signInPassword: '',
-
         };
+
+        // binding all the functions ....
+
+        this.onTextBoxChangeSignInEmail = this.onTextBoxChangeSignInEmail.bind(this) ;
+        this.onTextBoxChangeSignInPassword = this.onTextBoxChangeSignInPassword.bind(this) ;
+        this.onSignIn =  this.onSignIn.bind(this);
+
     }
 
     componentWillMount() 
     {
-        const token = getFromStorage('the_main_app');
-
-        if(token)
+        const obj = getFromStorage('the_main_app');
+        
+        if(obj && obj.token)
         {
             // Verify Token ... 
+            const { token } = obj ;
             fetch('/api/v1/account/verify?token='+token)
             .then(res => res.json())
             .then(json => {
@@ -53,6 +61,66 @@ class Home extends Component {
         }
     }
 
+    onTextBoxChangeSignInEmail(event) 
+    {
+        this.setState({
+                signInEmail: event.target.value,
+            })
+    }
+
+    onTextBoxChangeSignInPassword(event) 
+    {
+        this.setState({
+            signInPassword: event.target.value,
+        })
+    }
+
+    onSignIn()
+    {
+        // Post request for Login
+
+        const {
+            signInEmail,
+            signInPassword
+        } = this.state;
+
+        this.setState({
+            isLoading: true,
+        });
+
+        fetch('/api/v1/account/signin',{
+            method: 'POST',
+            body: JSON.stringify({
+                email: signInEmail,
+                password: signInPassword
+            }),
+            headers: {
+                "Content-Type":"application/json",
+            }
+        }).then( res => res.json() )
+            .then(json => {
+                if(json.success){
+                    setInStorage('the_main_app', { token: json.token});
+                    this.setState({
+
+                        signInError: json.message,
+                        isLoading: false,
+                        signInEmail: '',
+                        signInPassword: '',    
+                        token: json.token,
+                    });
+                }
+                else
+                {
+                   this.setState({
+                        signInError:    json.message,
+                        isLoading: false
+                    }); 
+                }
+            })  
+        
+    }
+
     render() {
         const {
             isLoading,
@@ -75,20 +143,31 @@ class Home extends Component {
         {
             return (
                 <div>
-                    <p>Please sign in ... </p>
+                    { // in-line JSX
+                        (signInError) ? 
+                        (
+                            <p>{signInError}</p>
+                            ) : (null)  
+                    }
+                    <h5>Please Sign In..</h5>
                     <input 
-                        type="email" 
-                        placeholder="Email" 
-                        value={signInEmail}
-                        
+                        type = "email" 
+                        placeholder = "Email" 
+                        value = {signInEmail}
+                        onChange = {this.onTextBoxChangeSignInEmail}
                     />
+                    <br/>
+                    <br/>
                     <input 
-                        type="password" 
-                        placeholder="Password"
-                        value={signInPassword}
-                        
+                        type = "password" 
+                        placeholder = "Password"
+                        value = {signInPassword}
+                        onChange = {this.onTextBoxChangeSignInPassword}
                     />
-                    <button>Sign In</button>  
+                    <br/>
+                    <br/>
+                    <Button onClick={this.onSignIn} variant="primary">SignIn</Button>{' '}
+                    
                 </div>
 
                 
@@ -97,8 +176,9 @@ class Home extends Component {
 
         return (
          
-            <div>
-                <p> hello </p>
+            <div>   
+            
+                <p> Hello</p>
             </div>
            
         );
