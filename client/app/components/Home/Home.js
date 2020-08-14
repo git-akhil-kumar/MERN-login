@@ -4,43 +4,83 @@ import 'whatwg-fetch';
 import {
     getFromStorage,
     setInStorage
-} from '../../utils/storage' ;
+} from '../../utilis/storage';
 
 class Home extends Component {
     constructor(props) {
         super(props); 
 
-        // initialize the state 
         this.state = {
-            counter: [],
-            isSignedIn: false,
-            isLoading: false,
-            signUpError: false,
-            signInError: false,
+            isLoading: true,
+            token: '',
+            signUpError: '',
+            signInError: ''
         };
+    }
 
-        componentDidMount() {
-            if(getFromStorage(''))
-        }  
+    componentWillMount() 
+    {
+        const token = getFromStorage('the_main_app');
+
+        if(token)
+        {
+            // Verify Token ... 
+            fetch('/api/v1/account/verify?token='+token)
+            .then(res => res.json())
+            .then(json => {
+                if(json.success ){
+
+                    this.setState({
+                        token: token,
+                        isLoading: false
+                    });
+                    console.log( ' yes we are here !!! ' ) ;
+                }else{
+                    this.setState({
+                        isLoading: false
+                    });
+                }
+            });
+        }
+        else
+        {
+
+            this.setState({
+                isLoading: false,
+            })
+        }
     }
 
     render() {
         const {
             isLoading,
+            token
         } = this.state;
 
-        if(isLoading) {  // loader
+        if(isLoading)
+        {
             return (
                 <div>
-                    <p>   Loading ..... </p>
+                    <p> Loading..</p>
                 </div>
             );
-        }  
+        }
+
+        if(!token)
+        {
+            return (
+                <div>
+                    <p>Sign up ... </p>
+                </div>
+            );
+        }
 
         return (
-            <div>
-                <h1> Hello from carry </h1>
-            </div>
+           <>
+                <div>
+                    <p> hello </p>
+                </div>
+           </>
         );
     }
 }

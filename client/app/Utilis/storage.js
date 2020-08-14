@@ -1,4 +1,3 @@
-
 export function getFromStorage(key ) {
 	if(!key){
 		return null;	
@@ -11,11 +10,7 @@ export function getFromStorage(key ) {
 		if(valueStr){
 			return JSON.parse(valueStr);
 		}
-		else 
-		{
-			return null;
-		}
-
+		return null;
 	}
 	catch(err) 
 	{

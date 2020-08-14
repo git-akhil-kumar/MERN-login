@@ -98,8 +98,6 @@ module.exports = (app) => {
             });
         };
 
-        console.log( '3' );
-
         if(!password){
             return res.send({
                 success: false,
@@ -110,8 +108,6 @@ module.exports = (app) => {
         email = email.toLowerCase();
         email = email.trim() ;
 
-        console.log( '4' );
-
         User.find({
                 email: email
             }, (err, users) => {
@@ -121,8 +117,7 @@ module.exports = (app) => {
                         message: 'Error: Server Error!!!'
                     });
                 }
-
-                console.log( '5' );
+                
                 if(users.length == 0){
                     return res.send({
                         success: false,
