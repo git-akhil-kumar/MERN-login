@@ -4,16 +4,13 @@ import Header from '../Header/Header';
 import Footer from '../Footer/Footer';
 
 const App = ({ children }) => (
-  <>
-    <Header />
-
+  <div>
+    <Header/>
     <main>
-    	<button>Submit</button>
-      {children}
+		{children}
     </main>
-
-    <Footer />
-  </>
+	<Footer />
+  </div>
 );
 
 export default App;
