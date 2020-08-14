@@ -1,9 +1,10 @@
 const User = require('../../models/User');
 const UserSession = require('../../models/UserSession');
+const Course = require('../../models/Course');
 
 module.exports = (app) => {
       
-    app.post('/api/account/signup', (req, res, next) => {
+    app.post('/api/v1/account/signup', (req, res, next) => {
         
 
         const { body } = req ;
@@ -78,7 +79,7 @@ module.exports = (app) => {
        * signin
       */
 
-    app.post('/api/account/signin', (req, res, next) => {
+    app.post('/api/v1/account/signin', (req, res, next) => {
 
         console.log( '1');
         
@@ -87,9 +88,10 @@ module.exports = (app) => {
             password
         } = body;
         
-        console.log( '2' );
 
         let { email } = body;
+
+       // console.error( ' body', req);
 
         if(!email){
             return res.send({
@@ -97,8 +99,6 @@ module.exports = (app) => {
                 message: 'Email can not be blank'
             });
         };
-
-        console.log( '3' );
 
         if(!password){
             return res.send({
@@ -110,8 +110,6 @@ module.exports = (app) => {
         email = email.toLowerCase();
         email = email.trim() ;
 
-        console.log( '4' );
-
         User.find({
                 email: email
             }, (err, users) => {
@@ -121,12 +119,11 @@ module.exports = (app) => {
                         message: 'Error: Server Error!!!'
                     });
                 }
-
-                console.log( '5' );
+                
                 if(users.length == 0){
                     return res.send({
                         success: false,
-                        message: 'Error: Invalid 5'
+                        message: 'No User Found'
                     })
                 }
                 const user = users[0];
@@ -163,12 +160,13 @@ module.exports = (app) => {
                     return res.send({
                         success:true,
                         message: 'User Session created successfully',
-                        token: doc._id
+                        token: doc._id,
+                        data: user,
                     });
                 });
         });});
 
-    app.get('/api/account/verify', (req, res, next) => {
+    app.get('/api/v1/account/verify', (req, res, next) => {
         // get the token id
         const { query } = req;
 
@@ -200,6 +198,117 @@ module.exports = (app) => {
                 })
             }
         })
-    });
+        });
 
+    app.get('/api/v1/account/logout', (req, res, next) =>{
+        const { query } = req;
+        const { token } = query;
+
+        UserSession.findOneAndUpdate({ 
+            _id: token,                                       // finding perimeters 
+            isDeleted: false
+        },{
+            $set: {
+                isDeleted: true
+            }                                                     // updating parameters
+        },  null ,(err ,sessions) => {
+            if(err) {
+                return res.send({
+                    success: false,
+                    message: 'Error: Server Error'
+                });
+            };
+            
+            console.log( ' Sessions : ', sessions);
+            if(sessions.length === 0  ){
+                return res.send({
+                    success: false,
+                    message: 'Error: sessions object empty'
+                });
+            }else{
+                return res.send({
+                    success: true,
+                    message: 'Successfully logout !!'
+                });
+            };
+        });
+        });
+
+    app.post('/api/v1/courses/add', (req, res, next) => {
+        
+        const { body } = req ;
+        
+        const { 
+            name,
+            details
+        } = body ;
+
+        if(!name) {
+
+            return res.send({
+                success: false,
+                message: 'Error: Course name can not be blank' 
+            })
+        } 
+
+        if(!details) {
+
+            return res.send({
+                success: false,
+                message: 'Error: details can not be blank' 
+            })///
+        } 
+
+        const newCourse = new Course();
+
+        newCourse.name = name;
+        newCourse.details = details;
+
+        newCourse.save((err, user) => {
+            if(err){
+                return res.send({
+                    success: false,
+                    message: 'Error: Server Error'
+                });
+            }
+
+            return res.send({
+                success: true,
+                message: 'Course Added',
+                data: newCourse,
+            });
+        })
+      });
+
+    app.get('/api/v1/courses', (req, res, next) => {
+        var course = Course;
+        var data = [];
+
+        // if(!course){
+        //     return res.send({
+        //         success: false,
+        //         message: 'Error: No course',
+        //     });
+        // }
+        // for(var key in course){
+        //     if(!course.hasOwnProperty(key))
+        //         continue;
+
+        //     var obj = course[key];
+
+        //     for(var prop in obj) {
+        //         if(!obj.hasOwnProperty(prop)  )
+        //             continue;
+
+        //         data = [...data,obj[prop]];
+        //     };
+        // };
+
+        return res.send({
+            success: true,
+            message: 'All courses fetched successfully!!...',
+            data: data,
+        })
+
+        }); 
 };
