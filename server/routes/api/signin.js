@@ -3,7 +3,7 @@ const UserSession = require('../../models/UserSession');
 
 module.exports = (app) => {
       
-    app.post('/api/account/signup', (req, res, next) => {
+    app.post('/api/v1/account/signup', (req, res, next) => {
         
 
         const { body } = req ;
@@ -78,7 +78,7 @@ module.exports = (app) => {
        * signin
       */
 
-    app.post('/api/account/signin', (req, res, next) => {
+    app.post('/api/v1/account/signin', (req, res, next) => {
 
         console.log( '1');
         
@@ -168,7 +168,7 @@ module.exports = (app) => {
                 });
         });});
 
-    app.get('/api/account/verify', (req, res, next) => {
+    app.get('/api/v1/account/verify', (req, res, next) => {
         // get the token id
         const { query } = req;
 
@@ -200,6 +200,40 @@ module.exports = (app) => {
                 })
             }
         })
-    });
+        });
 
+    app.get('/api/v1/account/logout', (req, res, next) =>{
+        const { query } = req;
+        const { token } = query;
+
+        UserSession.findOneAndUpdate({ 
+            _id: token,                                       // finding perimeters 
+            isDeleted: false
+        },{
+            $set: {
+                isDeleted: true
+            }                                                     // updating parameters
+        },  null ,(err ,sessions) => {
+            if(err) {
+                return res.send({
+                    success: false,
+                    message: 'Error: Server Error'
+                });
+            };
+            
+            console.log( ' Sessions : ', sessions);
+            if(sessions.length === 0  ){
+                return res.send({
+                    success: false,
+                    message: 'Error: sessions object empty'
+                });
+            }else{
+                return res.send({
+                    success: true,
+                    message: 'Successfully logout !!'
+                });
+            };
+        });
+
+    });
 };
