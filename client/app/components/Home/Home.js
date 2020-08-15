@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-// import Button from 'react-bootstrap';
+import Button from 'react-bootstrap';
 import 'whatwg-fetch';
+import {
+    get_logout,
+    post_sign_in,
+    post_sign_up,
+    post_add_course,
+    get_courses,
+    get_verify,
+} from '../../Api/api';
 
 import {
     getFromStorage,
@@ -32,11 +40,13 @@ class Home extends Component {
     {
         const obj = getFromStorage('the_main_app');
         
+        console.log(' componentDidMount', obj , obj.token ) ;
         if(obj && obj.token)
         {
+
             // Verify Token ... 
             const { token } = obj ;
-            fetch('/api/v1/account/verify?token='+token)
+            fetch('/v1/api/account/verify?token=' +token)
             .then(res => res.json())
             .then(json => {
                 if(json.success ){
@@ -46,18 +56,19 @@ class Home extends Component {
                         isLoading: false
                     });
                     console.log( ' yes we are here !!! ' ) ;
-                }else{
+                }
+                else{
                     this.setState({
                         isLoading: false
                     });
-                }
+                };
             });
         }
         else
         {
             this.setState({
                 isLoading: false,
-            })
+            });
         }
     }
 
@@ -88,7 +99,7 @@ class Home extends Component {
             isLoading: true,
         });
 
-        fetch('/api/v1/account/signin',{
+        fetch(post_sign_in,{
             method: 'POST',
             body: JSON.stringify({
                 email: signInEmail,
@@ -118,7 +129,39 @@ class Home extends Component {
                     }); 
                 }
             })  
-        
+    }
+
+    onLogout()
+    {
+         const {
+            token
+        } = this.state;
+
+        this.setState({
+            isLoading: true,
+        });
+
+        fetch(get_logout+token)
+            .then( res => res.json() )
+            .then(json => {
+                if(json.success){
+                    setInStorage('the_main_app', { token: ''});
+                    this.setState({
+                        signInError: json.message,
+                        isLoading: false,
+                        signInEmail: '',
+                        signInPassword: '',    
+                        token: '',
+                    });
+                }
+                else
+                {
+                   this.setState({
+                        signInError:    json.message,
+                        isLoading: false
+                    }); 
+                }
+            }) 
     }
 
     render() {
@@ -166,19 +209,17 @@ class Home extends Component {
                     />
                     <br/>
                     <br/>
-                    <Button onClick={this.onSignIn} variant="primary">SignIn</Button>{' '}
+                    <button onClick={this.onSignIn}>SignIn</button>{' '}
                     
                 </div>
-
-                
             );
         }
 
         return (
-         
-            <div>   
             
+            <div>   
                 <p> Hello</p>
+                <button onClick={this.onLogout}>Logout</button>{' '}
             </div>
            
         );

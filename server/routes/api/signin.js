@@ -4,7 +4,14 @@ const Course = require('../../models/Course');
 
 module.exports = (app) => {
       
-    app.post('/api/v1/account/signup', (req, res, next) => {
+    app.get('/v1/api/account', (req, res, next) => {
+        // Get all data of active the user
+        User.find({
+            
+        } ) 
+     })
+
+    app.post('/v1/api/account/signup', (req, res, next) => {
         
 
         const { body } = req ;
@@ -79,7 +86,7 @@ module.exports = (app) => {
        * signin
       */
 
-    app.post('/api/v1/account/signin', (req, res, next) => {
+    app.post('/v1/api/account/signin', (req, res, next) => {
 
         console.log( '1');
         
@@ -166,13 +173,13 @@ module.exports = (app) => {
                 });
         });});
 
-    app.get('/api/v1/account/verify', (req, res, next) => {
+    app.get('/v1/api/account/verify', (req, res, next) => {
         // get the token id
         const { query } = req;
 
         const { token } = query;
 
-        // vwrify the session token and make sure its not deleted
+        // verify the session token and make sure its not deleted
 
         // find the token id and 
         UserSession.find({ 
@@ -186,7 +193,7 @@ module.exports = (app) => {
                 });
             };
             
-            if(sessions.length != 1 ){
+            if(sessions.length == 0 ){
                 return res.send({
                     success: false,
                     message: 'Error: sessions object empty'
@@ -200,7 +207,7 @@ module.exports = (app) => {
         })
         });
 
-    app.get('/api/v1/account/logout', (req, res, next) =>{
+    app.get('/v1/api/account/logout', (req, res, next) =>{
         const { query } = req;
         const { token } = query;
 
@@ -219,6 +226,12 @@ module.exports = (app) => {
                 });
             };
             
+            if(!sessions){
+                return res.send({
+                    success: false,
+                    message: 'Not an active token..',
+                });
+            }
             console.log( ' Sessions : ', sessions);
             if(sessions.length === 0  ){
                 return res.send({
@@ -234,7 +247,7 @@ module.exports = (app) => {
         });
         });
 
-    app.post('/api/v1/courses/add', (req, res, next) => {
+    app.post('/v1/api/courses/add', (req, res, next) => {
         
         const { body } = req ;
         
@@ -280,35 +293,18 @@ module.exports = (app) => {
         })
       });
 
-    app.get('/api/v1/courses', (req, res, next) => {
-        var course = Course;
-        var data = [];
+    app.get('/v1/api/courses', (req, res, next) => {
+        Course.find((err, result) => {
+            if(err) 
+            {
+                return res.status(500).send(err);
+            }
+            return res.send({
+                success: true,
+                message: 'All courses fetched successfully !!',
+                data: result,
+            });
+        });
+     }); 
 
-        // if(!course){
-        //     return res.send({
-        //         success: false,
-        //         message: 'Error: No course',
-        //     });
-        // }
-        // for(var key in course){
-        //     if(!course.hasOwnProperty(key))
-        //         continue;
-
-        //     var obj = course[key];
-
-        //     for(var prop in obj) {
-        //         if(!obj.hasOwnProperty(prop)  )
-        //             continue;
-
-        //         data = [...data,obj[prop]];
-        //     };
-        // };
-
-        return res.send({
-            success: true,
-            message: 'All courses fetched successfully!!...',
-            data: data,
-        })
-
-        }); 
 };
