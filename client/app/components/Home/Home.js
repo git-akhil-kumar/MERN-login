@@ -46,18 +46,19 @@ class Home extends Component {
                         isLoading: false
                     });
                     console.log( ' yes we are here !!! ' ) ;
-                }else{
+                }
+                else{
                     this.setState({
                         isLoading: false
                     });
-                }
+                };
             });
         }
         else
         {
             this.setState({
                 isLoading: false,
-            })
+            });
         }
     }
 
@@ -169,15 +170,12 @@ class Home extends Component {
                     <Button onClick={this.onSignIn} variant="primary">SignIn</Button>{' '}
                     
                 </div>
-
-                
             );
         }
 
         return (
-         
-            <div>   
             
+            <div>   
                 <p> Hello</p>
             </div>
            
