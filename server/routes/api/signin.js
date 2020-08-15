@@ -9,7 +9,7 @@ module.exports = (app) => {
         User.find({
             
         } ) 
-    })
+     })
 
     app.post('/v1/api/account/signup', (req, res, next) => {
         
@@ -179,7 +179,7 @@ module.exports = (app) => {
 
         const { token } = query;
 
-        // vwrify the session token and make sure its not deleted
+        // verify the session token and make sure its not deleted
 
         // find the token id and 
         UserSession.find({ 
@@ -193,7 +193,7 @@ module.exports = (app) => {
                 });
             };
             
-            if(sessions.length != 1 ){
+            if(sessions.length == 0 ){
                 return res.send({
                     success: false,
                     message: 'Error: sessions object empty'
@@ -226,6 +226,12 @@ module.exports = (app) => {
                 });
             };
             
+            if(!sessions){
+                return res.send({
+                    success: false,
+                    message: 'Not an active token..',
+                });
+            }
             console.log( ' Sessions : ', sessions);
             if(sessions.length === 0  ){
                 return res.send({
