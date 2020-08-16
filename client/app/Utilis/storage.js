@@ -34,3 +34,20 @@ export function setInStorage(key, obj) {
 		console.error(err);
 	}
 }
+
+export function removeInStorage(key)
+{
+	if(!key)
+	{
+		return null;
+	}
+
+	try
+	{
+		localStorage.removeItem(key);
+	}
+	catch(err)
+	{
+		return null;
+	}
+}
