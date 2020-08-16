@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Button from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import 'whatwg-fetch';
 import {
     get_logout,
@@ -12,7 +12,8 @@ import {
 
 import {
     getFromStorage,
-    setInStorage
+    setInStorage,
+    removeInStorage,
 } from '../../utilis/storage';
 
 class Home extends Component {
@@ -33,24 +34,21 @@ class Home extends Component {
         this.onTextBoxChangeSignInEmail = this.onTextBoxChangeSignInEmail.bind(this) ;
         this.onTextBoxChangeSignInPassword = this.onTextBoxChangeSignInPassword.bind(this) ;
         this.onSignIn =  this.onSignIn.bind(this);
+        this.onLogout = this.onLogout.bind(this);
 
     }
 
     componentWillMount() 
     {
         const obj = getFromStorage('the_main_app');
-        
-        console.log(' componentDidMount', obj , obj.token ) ;
         if(obj && obj.token)
         {
-
             // Verify Token ... 
             const { token } = obj ;
-            fetch('/v1/api/account/verify?token=' +token)
+            fetch(get_verify +token)
             .then(res => res.json())
             .then(json => {
                 if(json.success ){
-
                     this.setState({
                         token: token,
                         isLoading: false
@@ -133,19 +131,15 @@ class Home extends Component {
 
     onLogout()
     {
-         const {
+        const {
             token
         } = this.state;
-
-        this.setState({
-            isLoading: true,
-        });
 
         fetch(get_logout+token)
             .then( res => res.json() )
             .then(json => {
                 if(json.success){
-                    setInStorage('the_main_app', { token: ''});
+                    removeInStorage(token);
                     this.setState({
                         signInError: json.message,
                         isLoading: false,
@@ -185,41 +179,59 @@ class Home extends Component {
         if(!token)
         {
             return (
-                <div>
-                    { // in-line JSX
-                        (signInError) ? 
-                        (
-                            <p>{signInError}</p>
-                            ) : (null)  
-                    }
-                    <h5>Please Sign In..</h5>
-                    <input 
-                        type = "email" 
-                        placeholder = "Email" 
-                        value = {signInEmail}
-                        onChange = {this.onTextBoxChangeSignInEmail}
-                    />
-                    <br/>
-                    <br/>
-                    <input 
-                        type = "password" 
-                        placeholder = "Password"
-                        value = {signInPassword}
-                        onChange = {this.onTextBoxChangeSignInPassword}
-                    />
-                    <br/>
-                    <br/>
-                    <button onClick={this.onSignIn}>SignIn</button>{' '}
-                    
+                <div className="container" style={{marginBottom:'200px',marginTop:'200px'}}>
+                    <div className="row">
+                        <div className="col"></div>
+                        <div className="col">
+                            <div className="row" style={{justifyContent:'center'}}>
+                                { // in-line JSX
+                                (signInError) ? 
+                                (
+                                    <p>{signInError}</p>
+                                    ) : (null)  
+                                }
+                                <h2>Login to your account</h2>
+                            </div>
+
+                            <div className="row">
+                                <input 
+                                    style={{width:'100%',marginBottom: '10px'    }}
+                                    type = "email" 
+                                    placeholder = "Email" 
+                                    value = {signInEmail}
+                                    onChange = {this.onTextBoxChangeSignInEmail}
+                                />
+                                <input 
+                                    style={{width:'100%',marginBottom: '10px'}}
+                                    type = "password" 
+                                    placeholder = "Password"
+                                    value = {signInPassword}
+                                    onChange = {this.onTextBoxChangeSignInPassword}
+                                />
+                            </div>
+
+                            <div className="row" >
+                                 <button style={{width:'100%'}} type='button' className='btn btn-secondary' onClick={this.onSignIn}>Login</button>{' '}
+                            </div>
+
+                            <div className='row' style={{marginTop:'4px'}}>
+                                <h6 style={{fontSize:'9px'}}>Don't have an account? </h6>
+ 
+                                <h6 style={{display:'block',marginRight:'0',marginLeft:'auto',fontSize:'9px'}}>Forgot Password ?</h6>
+                            </div>
+                        </div>
+                        <div className="col"></div>
+                    </div>
                 </div>
             );
         }
 
         return (
             
-            <div>   
+            <div className="container">   
                 <p> Hello</p>
-                <button onClick={this.onLogout}>Logout</button>{' '}
+
+                <Button onClick={this.onLogout}>Logout</Button>{' '}
             </div>
            
         );
